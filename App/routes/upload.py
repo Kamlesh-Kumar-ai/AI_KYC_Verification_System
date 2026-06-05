@@ -4,7 +4,7 @@ import os
 
 from App.services.ocr_services import extract_text
 from App.services.parser import extract_pan_details
-from App.services.validator import validate_pan
+from App.services.pan_validator import validate_pan
 
 router = APIRouter()
 
