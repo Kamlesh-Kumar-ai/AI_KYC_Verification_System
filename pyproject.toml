@@ -9,5 +9,5 @@ dependencies = [
     "pytesseract",
     "opencv-python-headless",
     "pillow",
-    "pdf2image"
+    "pdf2image",
 ]
