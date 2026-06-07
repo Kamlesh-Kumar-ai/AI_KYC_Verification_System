@@ -16,3 +16,4 @@ starlette==1.0.0
 typing-extensions==4.15.0
 typing-inspection==0.4.2
 uvicorn==0.46.0
+streamlit==1.58.0
