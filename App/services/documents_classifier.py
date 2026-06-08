@@ -26,7 +26,7 @@ def classify_document(text):
     if "GOVERNMENT OF INDIA" in text_upper:
         return "AADHAAR"
 
-    if "INCOME TAX" in text_upper:
+    if "INCOME TAX" or "INCOME TAX DEPARTMENT" in text_upper:
         return "PAN"
 
     return "UNKNOWN"

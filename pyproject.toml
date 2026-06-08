@@ -10,4 +10,11 @@ dependencies = [
     "opencv-python-headless",
     "pillow",
     "pdf2image",
+    "easyocr>=1.7.2",
+    "opencv-python>=4.13.0.92",
+]
+
+[dependency-groups]
+dev = [
+    "isort>=8.0.1",
 ]
