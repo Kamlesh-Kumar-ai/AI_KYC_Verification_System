@@ -6,7 +6,6 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "streamlit",
-    "pytesseract",
     "opencv-python-headless",
     "pillow",
     "pdf2image",
