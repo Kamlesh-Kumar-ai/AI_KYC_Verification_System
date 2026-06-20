@@ -7,6 +7,8 @@ from PIL import Image
 
 from App.services.ocr_services import extract_text
 from App.services.parser import parse_document
+from App.services.face_verification import verify_face
+import tempfile
 
 st.set_page_config(
     page_title="AI Document Verification System",
@@ -49,6 +51,12 @@ uploaded_file = st.file_uploader(
     type=["jpg", "jpeg", "png", "pdf"]
 )
 
+st.markdown("-----")
+st.subheader("📁 Uploaded Document")
+selfie_image = st.camera_input(
+    "take a live selfie"
+)
+
 if uploaded_file:
 
     image = None
@@ -74,6 +82,17 @@ if uploaded_file:
             temp.flush()
 
             temp_path = temp.name
+selfie_path = None
+
+if selfie_image:
+    with tempfile.NamedTemporaryFile(
+        delete=False,
+        suffix=".jpg"
+    ) as selfie_file:
+        selfie_file.write(
+            selfie_file.getvalue()
+        )
+        selfie_path = selfie_file.name
 
         try:
 
@@ -84,7 +103,13 @@ if uploaded_file:
             text = extract_text(temp_path)
 
             parsed_data = parse_document(text)
-
+            
+            face_res = None
+            if selfie_path:
+                face_res = verify_face(
+                    temp_path,
+                    selfie_path
+                )
             doc_type = parsed_data.get(
                 "document_type",
                 "UNKNOWN"
@@ -183,13 +208,40 @@ if uploaded_file:
                 st.info("Document Face")
 
             with face2:
-                st.info("Selfie Image")
+                if selfie_image:
+
+                    st.image(
+                        selfie_image,
+                        width = 250
+                    )
+                else:
+                    st.info(
+                        "selfie image"
+                    )
 
             with face3:
-                st.metric(
-                    "Match Score",
-                    "Pending"
-                )
+                if face_res:
+                    score = (
+                        1 - 
+                        face_res["distance"]
+                    )*100
+                    st.matric(
+                        "match score",
+                        f"{score:.2f}"
+                    )
+                    if face_res["verified"]:
+                        st.success(
+                            "face matched"
+                        )
+                    else:
+                        st.error(
+                            "face mismatched"
+                        )
+                else:
+                    st.matric(
+                        "match score",
+                        "pending"
+                    )
 
             # -----------------------
             # FRAUD DETECTION
@@ -212,7 +264,12 @@ if uploaded_file:
                     "Not Detected",
 
                 "Face Mismatch":
-                    "Pending"
+                    (
+                        "Detected"
+                        if face_res
+                        and not face_res["verified"]
+                        else "Not Detected"
+                    )
             }
 
             st.json(fraud_result)
@@ -234,8 +291,13 @@ if uploaded_file:
                 "OCR":
                     "Passed",
 
-                "Validation":
-                    "Passed",
+                "Face verification":
+                (
+                    "Passed"
+                    if face_res
+                    and face_res["verified"]
+                    else "Failed"
+                ),
 
                 "Fraud Check":
                     "Passed",
